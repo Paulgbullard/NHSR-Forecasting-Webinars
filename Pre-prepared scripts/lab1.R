@@ -50,3 +50,32 @@ ae_hourly <- ae_tsb %>%
 ae_daily <- ae_hourly %>% 
   index_by(year_day=as_date(arrival_1h)) %>% 
   summarise(n_attendance=sum(n_attendance))
+
+ae_weekly <- ae_hourly %>% 
+  index_by(weekly=as_date(floor_date(arrival_1h, unit = "weekly"))) %>% 
+  summarise(n_attendance=sum(n_attendance))
+
+ae_monthly <- ae_hourly %>% 
+  index_by(monthly=as_date(floor_date(arrival_1h, unit = "monthly"))) %>% 
+  summarise(n_attendance=sum(n_attendance))
+
+ae_daily %>%autoplot()
+ae_weekly %>% autoplot()
+ae_monthly %>% autoplot()
+
+#######
+#Live coding here:
+#######
+
+#seasons
+
+ae_daily %>% gg_season(n_attendance)
+ae_daily %>% gg_season(n_attendance, period = "week")
+ae_daily %>% gg_season(n_attendance, period = "month")
+ae_daily %>% gg_subseries(n_attendance, period = "week")
+
+#ACF
+
+ae_daily %>% gg_lag(n_attendance, lags = c(1:14), geom = "point")
+ae_daily %>% ACF(lag_max = 14)
+ae_daily %>% ACF(lag_max = 21) %>% autoplot()
